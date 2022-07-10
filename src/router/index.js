@@ -9,9 +9,10 @@ const routes = [
   {
     path: '/layout',
     component: Layout,
+
     children: [
-      { path: 'home', component: Home },
-      { path: 'search', component: Search },
+      { path: 'home', component: Home, meta: { title: '首页' } },
+      { path: 'search', component: Search, meta: { title: '搜索' } },
     ],
   },
   { path: '/', redirect: '/layout/home' },

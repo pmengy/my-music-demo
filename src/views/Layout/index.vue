@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <van-nav-bar title="首页" />
+  <div style="padding-bottom: 48px">
+    <van-nav-bar :title="$route.meta.title" />
     <router-view></router-view>
     <van-tabbar route>
       <van-tabbar-item icon="home-o" to="/layout/home">首页</van-tabbar-item>
@@ -14,10 +14,19 @@ export default {
   name: 'MyMusicDemoIndex',
 
   data() {
-    return {};
+    return {
+      title: '',
+    };
   },
 
-  mounted() {},
+  mounted() {
+    // this.title = this.$route.meta.title;
+  },
+  watch: {
+    // $route(newVal) {
+    //   this.title = newVal.meta.title;
+    // },
+  },
 
   methods: {},
 };
