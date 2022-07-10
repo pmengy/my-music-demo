@@ -1,12 +1,12 @@
 <template>
   <div>
-    <router-view></router-view>
+    home
   </div>
 </template>
 
 <script>
 export default {
-  name: 'MyMusicDemoApp',
+  name: 'MyMusicDemoIndex',
 
   data() {
     return {
