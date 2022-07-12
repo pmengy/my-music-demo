@@ -1,6 +1,11 @@
 <template>
   <div>
-    <van-search shape="round" placeholder="请输入搜索关键词" v-model="value" />
+    <van-search
+      shape="round"
+      placeholder="请输入搜索关键词"
+      v-model="value"
+      @input="input"
+    />
     <!-- 热门搜索 -->
     <template v-if="searchList.length === 0">
       <van-cell title="热门搜索" />
@@ -30,12 +35,19 @@
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <van-cell
-          v-for="item in searchList"
-          :key="item.id"
+        <SongItem
+          v-for="(item, index) in searchList"
+          :key="index"
+          :name="item.name"
+          :author="item.ar[0].name"
+          :id="item.id"
+        ></SongItem>
+        <!-- <van-cell
+          v-for="(item, index) in searchList"
+          :key="index"
           :title="item.name"
           :label="`${item.ar[0].name}-${item.name}`"
-        />
+        /> -->
       </van-list>
     </template>
   </div>
@@ -43,6 +55,7 @@
 
 <script>
 import { getSearchTagsApi, getSearchListApi } from '@/apis/index';
+import SongItem from '@/components/SongItem';
 export default {
   name: 'MyMusicDemoIndex',
 
@@ -53,9 +66,14 @@ export default {
       searchList: [],
       loading: false,
       finished: false,
+      limit: 20,
+      page: 1,
+      timer: null,
     };
   },
-
+  components: {
+    SongItem,
+  },
   created() {
     this.getHotList();
   },
@@ -71,19 +89,57 @@ export default {
     },
 
     async click(val) {
+      this.page = 1;
+      this.finished = false;
       this.value = val;
+      this.searchList = await this.getSearchList();
+    },
+    async onLoad() {
+      this.page++;
+      const res = await this.getSearchList();
+      if (res.length === 0) {
+        this.finished = true;
+        this.loading = true;
+        return;
+      }
+      this.searchList = [...this.searchList, ...res];
+      this.loading = false;
+    },
+    async input() {
+      /* this.page = 1;
+      this.finished = false;
+      if (!this.value.trim()) {
+        this.searchList = [];
+        return;
+      }
+      this.searchList = await this.getSearchList(); */
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setTimeout(async () => {
+        this.page = 1;
+        this.finished = false;
+        if (!this.value.trim()) {
+          this.searchList = [];
+          return;
+        }
+        this.searchList = await this.getSearchList();
+      }, 1000);
+    },
+    async getSearchList() {
       try {
         const res = await getSearchListApi({
           keywords: this.value,
+          limit: this.limit,
+          offset: (this.page - 1) * this.limit,
         });
-        this.searchList = res.data.result.songs;
-        this.$toast.success('success');
+        console.log(res);
+        return res.data.result.songs || [];
+        // this.$toast.success('success');
       } catch (err) {
-        this.$toast.fail(err);
+        // this.$toast.fail(err);
+        return [];
       }
-    },
-    onLoad() {
-      // console.log(111);
     },
   },
 };

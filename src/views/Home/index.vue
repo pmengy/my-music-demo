@@ -11,7 +11,14 @@
       </van-grid-item>
     </van-grid>
     <van-cell title="最佳匹配" class="title" />
-    <van-cell
+    <SongItem
+      v-for="item in NewSongList"
+      :key="item.id"
+      :name="item.name"
+      :author="item.song.artists[0].name"
+      :id="item.id"
+    ></SongItem>
+    <!-- <van-cell
       v-for="item in NewSongList"
       :key="item.id"
       center
@@ -26,14 +33,15 @@
     >
       <template>
         <van-icon color="#000" name="play-circle-o" size="28" />
-      </template>
-    </van-cell>
+      </template> 
+    </van-cell>-->
   </div>
 </template>
 
 <script>
-import { getRecommendListApi } from '@/apis/index';
-import { getNewSongApi } from '@/apis/index';
+import { getRecommendListApi, getNewSongApi } from '@/apis/index';
+import SongItem from '@/components/SongItem';
+
 export default {
   data() {
     return {
@@ -41,7 +49,9 @@ export default {
       NewSongList: [],
     };
   },
-
+  components: {
+    SongItem,
+  },
   created() {
     this.getPersonalized();
     this.getNewSong();
